@@ -5,7 +5,9 @@
 - Pandas
 - numpy
 - matplotlib.pyplot
-- seaborn 
+- seaborn
+
+Дашборд по проекту: https://datalens.yandex/mgq1m3yykpte9
 
 **Проект 2: Проверка гипотез**    
 **Задача:** проверить следующие гипотезы:    
