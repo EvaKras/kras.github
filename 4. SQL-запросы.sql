@@ -5,31 +5,31 @@
 
 
 with tbl as (
-select kod_rtt, srt.name, srt.gruppa, edinic, city, sr.kod, status, 
-ROUND((summa*edinic),2) as Выручка, 
-ROUND(((summa*edinic)/sum(summa*edinic) over(partition by gruppa)*100),2) as 'Доля_выручки_по_группе'
-from cheki ch left join spr_rrt srt ON ch.kod_tovara = srt.kod
+select kod_rtt, srt.name, srt.gruppa, quantity, city, sr.kod, status, 
+ROUND((summa*quantity),2) as Выручка, 
+ROUND(((summa*quantity)/sum(summa*quantity) over(partition by groupp)*100),2) as 'Доля_выручки_по_группе'
+from checks ch left join spr_rrt srt ON ch.kod_tovara = srt.kod
 			 left join spr_rtt sr ON ch. kod_rtt = sr.kod
 )
 					
-select kod_rtt, name, gruppa, sum(edinic), sum(Доля_выручки_по_группе)
+select kod_rtt, name, gruppa, sum(quantity), sum(Доля_выручки_по_группе)
 from tbl
 where name='Сумка' and 
-		city in (' Москва', 'Улан-Удэ', 'Новосибирск') and 
-		status != 0 and 
-		kod not in (select sr.kod from cheki ch left join spr_rtt sr ON ch.kod_rtt = sr.kod	
-					group by sr.kod
-					having SUM(summa*edinic) = 0)
-group by kod_rtt, name, gruppa
+	city in (' Москва', 'Улан-Удэ', 'Новосибирск') and 
+	status != 0 and 
+	kod not in (select sr.kod from checks ch left join spr_rtt sr ON ch.kod_rtt = sr.kod	
+		    group by sr.kod
+		    having SUM(summa*quantity) = 0)
+group by kod_rtt, name, groupp
 
 Исходные таблицы:
-•	cheki: таблица с информацией о продажах
+•	checks: таблица с информацией о продажах
 •	date – дата продажи;
 •	document –  номер документа (чека);
 •	kod_rtt –  код магазина;
 •	kod_tovara – код товара:
 •	summa – сумма оплаты за товар;
-•	edinic – число единиц товара.
+•	quantity – число единиц товара.
 
 •	spr_rtt:  справочник по магазинам
 •	kod – код магазина;
@@ -39,7 +39,7 @@ group by kod_rtt, name, gruppa
 •	spr_rrt:  справочник по товарам
 •	kod – код товара;
 •	name – наименование товара;
-•	gruppa – товарная группа.
+•	groupp – товарная группа.
 
 2. Отнести каждого студента к группе,  в зависимости от пройденных заданий
 
@@ -51,11 +51,10 @@ insert into intervall values ('I', 'от 0 до 10'),
 							('IV', 'больше 27');						
 with tbl as (
 select student_name, rate,
-	case 
-		when rate<=10 then 'I'
-        WHEN rate <= 15 THEN 'II'
-        WHEN rate <= 27 THEN 'III'
-        ELSE 'IV'
+	case when rate<=10 then 'I'
+        when rate <= 15 then 'II'
+        when rate <= 27 then 'III'
+        else 'IV'
 	end as 'Группа'
 from (select student_name, count(*) as rate 
 		from (select student_name, step_id
